@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.717.0",
+    "axios": "^0.21.1",
     "jquery": "^3.5.1",
     "npm": "^7.5.2",
     "util": "^0.12.3"
