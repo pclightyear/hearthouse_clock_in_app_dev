@@ -11,12 +11,15 @@ module.exports = {
             images: path.resolve(distPath, 'images')
         }
     },
-    entry: './index.js',
+    entry: {
+        'index': './index.js',
+        'bulletin': './bulletin.js'
+    },
     output: {
         path: distPath,
         filename: '[name].bundle.js',
         libraryTarget: 'var',
-        library: 'Main'
+        library: ["Lib", "[name]"]
     },
     module: {
         rules: [

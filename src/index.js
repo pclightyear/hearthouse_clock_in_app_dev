@@ -1,3 +1,4 @@
+import './main.css';
 import './index.css';
 const config = require('./config.json');
 var AWS = require('aws-sdk');
@@ -6,11 +7,13 @@ if (config.DEVELOPMENT) {
     var awsRegion = config.DEV.awsRegion;
     var IdentityPoolId = config.DEV.IdentityPoolId;
     var BucketName = config.DEV.BucketName;
+    var apiHOST = config.DEV.apiHOST;
     var NameListFileKey = config.DEV.NameListFileKey;  
 } else {
     var awsRegion = config.PROD.awsRegion;
     var IdentityPoolId = config.PROD.IdentityPoolId;
     var BucketName = config.PROD.BucketName;
+    var apiHOST = config.PROD.apiHOST;
     var NameListFileKey = config.PROD.NameListFileKey;  
 };
 
@@ -79,11 +82,11 @@ function loadSuccessUIChange() {
 }
 
 function displayDropDownMenus() {
-    document.getElementById(NAME_DROPDOWN).style.display = "block";
+    document.getElementById(NAME_DROPDOWN).style.display = "flex";
 }
 
 function displayButtons() {
-    document.getElementById(CLOCK_IN_BUTTON).style.display = "block";
+    document.getElementById(CLOCK_IN_BUTTON).style.display = "flex";
 }
 
 function removeLoadingHint() {
