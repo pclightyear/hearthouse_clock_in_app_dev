@@ -1,17 +1,14 @@
 import './main.css';
 import './bulletin.css';
 const config = require('./config.json');
-const axios = require('axios');
 var AWS = require('aws-sdk');
 
 if (config.DEVELOPMENT) {
     var awsRegion = config.DEV.awsRegion;
     var IdentityPoolId = config.DEV.IdentityPoolId;
-    var apiHOST = config.DEV.apiHOST;
 } else {
     var awsRegion = config.PROD.awsRegion;
     var IdentityPoolId = config.PROD.IdentityPoolId;
-    var apiHOST = config.PROD.apiHOST;
 };
 
 AWS.config.update({
@@ -33,27 +30,8 @@ var fetchPostSuccess = false;
 
 // fetch posts from dynamo DB
 export function fetchBulletinPost() {
-    // let url = `${apiHOST}/hearthouseGetBulletinPosts`;
-
-    // axios.get(url)
-    //     .then(res => {
-    //         res = JSON.parse(res.Payload); 
-    //         console.log(res);
-
-    //         if (res.success) {
-    //             var posts = res.posts;
-    //             console.log(posts);
-    //         } else {
-    //             displayFetchPostsServerCrash()
-    //         }
-    //     })
-    //     .catch(err => {
-    //         console.log(err)
-    //         displayFetchPostsServerCrash()
-    //     })
-
     var params = {
-    FunctionName: "hearthouseGetBulletinPosts"
+        FunctionName: "hearthouseGetBulletinPosts"
     };
         
     lambda.invoke(params, function(err, data) {
@@ -128,7 +106,7 @@ function populatePostList(posts) {
 
         var tsNode = document.createElement("p");
         var ts = new Date(parseInt(post.ts));
-        tsNode.innerText = `${ts.getFullYear()}/${ts.getMonth()+1}/${ts.getDate()}`;
+        tsNode.innerText = `張貼日期：${ts.getFullYear()}/${ts.getMonth()+1}/${ts.getDate()}`;
 
         headingNode.appendChild(titleNode);
         headingNode.appendChild(tsNode);
