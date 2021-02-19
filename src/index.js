@@ -6,15 +6,9 @@ var AWS = require('aws-sdk');
 if (config.DEVELOPMENT) {
     var awsRegion = config.DEV.awsRegion;
     var IdentityPoolId = config.DEV.IdentityPoolId;
-    var BucketName = config.DEV.BucketName;
-    var apiHOST = config.DEV.apiHOST;
-    var NameListFileKey = config.DEV.NameListFileKey;  
 } else {
     var awsRegion = config.PROD.awsRegion;
     var IdentityPoolId = config.PROD.IdentityPoolId;
-    var BucketName = config.PROD.BucketName;
-    var apiHOST = config.PROD.apiHOST;
-    var NameListFileKey = config.PROD.NameListFileKey;  
 };
 
 AWS.config.update({
@@ -32,32 +26,25 @@ var lambda = new AWS.Lambda({
     })
 });
 
-var s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    region: awsRegion,
-    credentials: new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: IdentityPoolId
-    })
-});
-
 var nameList;
 var fetchNameListSuccess = false;
 
-// fetch name list from s3 bucket
+// fetch name list from dynamoDB
 export function fetchNameList() {
     var params = {
-        Bucket: BucketName, 
-        Key: NameListFileKey, 
+        FunctionName: "hearthouseGetNameList"
     };
 
-    s3.getObject(params, function(err, data) {
+    lambda.invoke(params, function(err, data) {
         if (err) {
             console.log(err, err.stack); // an error occurred
             displayServerErrorMsg()
-        } else {
-            var json = JSON.parse(data.Body.toString());
-            nameList = json.nameList;
-        
+        }  
+        else {
+            var res = JSON.parse(data.Payload)
+            nameList = res.nameList;
+            nameList.sort()
+
             if (!nameList) {
                 displayServerErrorMsg();
             } else {
