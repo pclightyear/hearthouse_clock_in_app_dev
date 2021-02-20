@@ -132,6 +132,7 @@ export function clockIn() {
                 var res = JSON.parse(data.Payload)
                 if (res.success) {
                     displayClockInSuccess(clockInTs)
+                    window.location.href = "./bulletin.html";
                 } else if (res.isTooEarly) {
                     displayClockInTooEarly()
                 } else if (res.noShift) {
