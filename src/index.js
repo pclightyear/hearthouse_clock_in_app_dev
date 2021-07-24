@@ -27,8 +27,11 @@ var lambda = new AWS.Lambda({
 });
 
 var nameList;
+var backgroundImageUrl;
+var posts;
 var fetchNameListSuccess = false;
 var fetchPostSuccess = false;
+var fetchBackgroundImageSuccess = false;
 
 // fetch name list from dynamoDB
 export function fetchNameList() {
@@ -51,7 +54,6 @@ export function fetchNameList() {
             } else {
                 fetchNameListSuccess = true;
                 loadSuccessUIChange();
-                populateDropdownMenu();
             }
         }
     });
@@ -66,24 +68,48 @@ export function fetchBulletinPost() {
     lambda.invoke(params, function(err, data) {
         if (err) {
             console.log(err, err.stack) // an error occurred
-            displayFetchPostsServerCrash()
+            displayServerErrorMsg();
         }  
         else {
             // console.log(JSON.parse(data.Payload))
             var res = JSON.parse(data.Payload)
             if (res.success) {
-                var posts = res.posts;
-                // console.log(posts);
                 fetchPostSuccess = true;
+                posts = res.posts;
+                // console.log(posts);
                 loadSuccessUIChange();
-                populatePostList(posts);
             } else {
-                displayFetchPostsServerCrash()
+                displayServerErrorMsg();
             }
         }
     });
 }
 
+// fetch background image url from dynamo DB
+export function fetchBackgroundImage() {
+    var params = {
+        FunctionName: "hearthouseFetchFrontEndBackgroundImage"
+    };
+    
+    lambda.invoke(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack) // an error occurred
+            displayServerErrorMsg();
+        } 
+        else {
+            var res = JSON.parse(data.Payload)
+            if (res.success) {
+                fetchBackgroundImageSuccess = true;
+                backgroundImageUrl = res.url;
+                loadSuccessUIChange();
+            } else {
+                displayServerErrorMsg();
+            }
+        }
+    })
+}
+
+var BG = "bg"
 var NAME_DROPDOWN = "name-dropdown";
 var CLOCK_IN_BUTTON = "clock-in-button"
 var LOADING_HINT = "loading-hint"
@@ -93,13 +119,27 @@ var LOADING_HINT = "loading-hint";
 var NO_POST_HINT = "no-post-hint";
 
 function loadSuccessUIChange() {
-    if (fetchNameListSuccess && fetchBulletinPost) {
+    if (fetchNameListSuccess && fetchBulletinPost && fetchBackgroundImageSuccess) {
+        populatePostList();
+        populateDropdownMenu();
+        
+        displayBackground()
         displayDropDownMenus()
         displayButtons()
         removeLoadingHint();
 
         displayBulletin();
         removeLoadingHint();
+    }
+}
+
+function displayBackground() {
+    if (backgroundImageUrl && backgroundImageUrl != "none") {
+        // use other bg
+        document.getElementById(BG).style.backgroundImage = `url(${backgroundImageUrl})`;
+    } else {
+        // default bg
+        document.getElementById(BG).style.backgroundImage = "url('images/bg.jpg')";
     }
 }
 
@@ -151,7 +191,7 @@ function populateDropdownMenu() {
 </a>
 */
 
-function populatePostList(posts) {    
+function populatePostList() {    
     var list = document.getElementById(BULLETIN);
     var postNodes = [];
     

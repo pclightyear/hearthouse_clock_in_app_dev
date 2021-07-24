@@ -26,7 +26,10 @@ var lambda = new AWS.Lambda({
     })
 });
 
+var backgroundImageUrl;
+var posts;
 var fetchPostSuccess = false;
+var fetchBackgroundImageSuccess = false;
 
 // fetch posts from dynamo DB
 export function fetchBulletinPost() {
@@ -37,32 +40,70 @@ export function fetchBulletinPost() {
     lambda.invoke(params, function(err, data) {
         if (err) {
             console.log(err, err.stack) // an error occurred
-            displayFetchPostsServerCrash()
+            displayServerErrorMsg()
         }  
         else {
-            console.log(JSON.parse(data.Payload))
+            // console.log(JSON.parse(data.Payload))
             var res = JSON.parse(data.Payload)
             if (res.success) {
-                var posts = res.posts;
-                console.log(posts);
                 fetchPostSuccess = true;
+                posts = res.posts;
+                // console.log(posts);
                 loadSuccessUIChange();
-                populatePostList(posts);
             } else {
-                displayFetchPostsServerCrash()
+                displayServerErrorMsg()
             }
         }
     });
 }
 
+// fetch background image url from dynamo DB
+export function fetchBackgroundImage() {
+    var params = {
+        FunctionName: "hearthouseFetchFrontEndBackgroundImage"
+    };
+    
+    lambda.invoke(params, function(err, data) {
+        if (err) {
+            console.log(err, err.stack) // an error occurred
+            displayServerErrorMsg();
+        } 
+        else {
+            var res = JSON.parse(data.Payload)
+            if (res.success) {
+                fetchBackgroundImageSuccess = true;
+                backgroundImageUrl = res.url;
+                loadSuccessUIChange();
+            } else {
+                displayServerErrorMsg();
+            }
+        }
+    })
+}
+
+var BG = "bg"
 var BULLETIN = "bulletin";
 var LOADING_HINT = "loading-hint";
 var NO_POST_HINT = "no-post-hint";
 
 function loadSuccessUIChange() {
-    if (fetchPostSuccess) {
+    if (fetchPostSuccess && fetchBackgroundImageSuccess) {
+        populatePostList();
+
+        displayBackground()
         displayBulletin();
+        
         removeLoadingHint();
+    }
+}
+
+function displayBackground() {
+    if (backgroundImageUrl && backgroundImageUrl != "none") {
+        // use other bg
+        document.getElementById(BG).style.backgroundImage = `url(${backgroundImageUrl})`;
+    } else {
+        // default bg
+        document.getElementById(BG).style.backgroundImage = "url('images/bg.jpg')";
     }
 }
 
@@ -84,7 +125,7 @@ function removeLoadingHint() {
 </a>
 */
 
-function populatePostList(posts) {    
+function populatePostList() {    
     var list = document.getElementById(BULLETIN);
     var postNodes = [];
     
@@ -128,6 +169,6 @@ function populatePostList(posts) {
     })
 }
 
-function displayFetchPostsServerCrash() {
-    alert("讀取公告欄失敗！看起來是伺服器出現問題了。\n請按 f5 再試一次。")
+function displayServerErrorMsg() {
+    alert("出現異常狀態，請按F5重整頁面，\n或使用舊的打卡系統打卡。")
 }
