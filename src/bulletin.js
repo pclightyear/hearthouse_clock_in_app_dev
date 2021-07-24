@@ -86,6 +86,7 @@ function removeLoadingHint() {
 
 function populatePostList(posts) {    
     var list = document.getElementById(BULLETIN);
+    var postNodes = [];
     
     if (posts.length == 0) {
         document.getElementById(NO_POST_HINT).style.display = "block";
@@ -93,7 +94,7 @@ function populatePostList(posts) {
     }
 
     posts.forEach(post => {
-        var postNode = document.createElement("a");
+        var postNode = document.createElement("li");
         postNode.href = "#";
         postNode.className = "list-group-item list-group-item-action";
 
@@ -104,12 +105,13 @@ function populatePostList(posts) {
         titleNode.className = "mb-1";
         titleNode.innerText = post.title;
 
-        var tsNode = document.createElement("p");
+        var tsAuthorNode = document.createElement("p");
         var ts = new Date(parseInt(post.ts));
-        tsNode.innerText = `張貼日期：${ts.getFullYear()}/${ts.getMonth()+1}/${ts.getDate()}`;
+        tsAuthorNode.innerText = `張貼者：${post.author}；張貼日期：${ts.getFullYear()}/${ts.getMonth()+1}/${ts.getDate()}`;
+        tsAuthorNode.className = "post-ts-author-p";
 
         headingNode.appendChild(titleNode);
-        headingNode.appendChild(tsNode);
+        headingNode.appendChild(tsAuthorNode);
         
         var paragraphNode = document.createElement("p");
         paragraphNode.innerText  = post.content;
@@ -117,8 +119,13 @@ function populatePostList(posts) {
         postNode.appendChild(headingNode);
         postNode.appendChild(paragraphNode);
 
-        list.appendChild(postNode);
+        postNodes.push(postNode);
     });
+
+    postNodes = postNodes.reverse();
+    postNodes.forEach(node => {
+        list.appendChild(node);
+    })
 }
 
 function displayFetchPostsServerCrash() {

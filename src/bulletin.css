@@ -8,4 +8,10 @@
 
 #bulletin {
     display: none;
+    max-height: 45rem;
+    overflow-x: hidden;
+}
+
+#post-ts-author-p {
+    width: 30%;
 }

@@ -1,3 +1,11 @@
+#main-content {
+    padding-top: 2rem;
+}
+
+#clock-in {
+    padding-top: 3rem;
+}
+
 .dropdown-menu {
     height: auto;
     max-height: 35rem;
@@ -13,4 +21,18 @@
 #clock-in-button {
     margin-top: .5rem;
     display: none;
+}
+
+#no-post-hint {
+    display: none;
+}
+
+#post-ts-author-p {
+    width: 30%;
+}
+
+#bulletin {
+    display: none;
+    max-height: 45rem;
+    overflow-x: hidden;
 }

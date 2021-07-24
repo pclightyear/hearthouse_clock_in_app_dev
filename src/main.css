@@ -12,8 +12,9 @@
     height: 100%;
     position: fixed;
     background: url('images/bg.jpg');
-    background-size: 100%;
-    background-position: 0 20%;
+    /* background-position: 5rem; */
+    background-size: 1920px;
+    background-position: center 25%;
     background-repeat: no-repeat;
     opacity: 0.5;
 }
