@@ -26,9 +26,9 @@ var lambda = new AWS.Lambda({
     })
 });
 
-var nameList;
-var backgroundImageUrl;
-var posts;
+var nameList = [];
+var backgroundImageUrl = "";
+var posts = [];
 var fetchNameListSuccess = false;
 var fetchPostSuccess = false;
 var fetchBackgroundImageSuccess = false;
